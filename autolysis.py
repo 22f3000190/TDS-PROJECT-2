@@ -9,6 +9,7 @@
 #   "openai",
 #   "scikit-learn",
 #   "requests",
+#   "python-dotenv",
 #   "ipykernel", 
 # ]
 # ///
