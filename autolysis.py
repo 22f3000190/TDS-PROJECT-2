@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+!pip install seaborn
 import seaborn as sns
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
