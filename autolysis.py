@@ -142,27 +142,46 @@ def query_llm(summary, charts):
     """
     try:
         prompt = f"""
-        Provide a comprehensive data analysis report based on the following dataset summary:
+        You are a professional data analyst. Based on the provided dataset summary and highlights, create a comprehensive data analysis report with actionable insights.  
 
-        Dataset Columns: {summary['columns']}
-        Data Types: {summary['data_types']}
-        Missing Values: {summary['missing_values']}
+        ### Dataset Overview:  
+        - **Columns:** {summary['columns']}  
+        - **Data Types:** {summary['data_types']}  
+        - **Missing Values:** {summary['missing_values']}  
+        
+        ### Numeric Column Highlights:  
+        {chr(10).join([f"- {col}: Mean = {stats['mean']}, Median = {stats['median']}, Std Dev = {stats['std_dev']}"  
+                       for col, stats in summary.get('comprehensive_stats', {}).items()])}  
+        
+        ### Categorical Column Highlights:  
+        {chr(10).join([f"- {col}: Unique Values = {stats['unique_values']}, Most Common = {stats['most_common_value']}"  
+                       for col, stats in summary.get('categorical_stats', {}).items()])}  
+        
+        ### Generated Visualizations:  
+        - {charts}  
+        
+        ### Task:  
+        Provide a detailed analysis in the following sections:  
+        
+        1. **Overview of the Dataset:**  
+           Summarize the structure, types of data, and missing values.  
+        
+        2. **Key Insights from Statistical Analysis:**  
+           Highlight significant trends, relationships, or anomalies observed in the numeric and categorical columns.  
+        
+        3. **Observations and Recommendations:**  
+           Suggest actionable insights or hypotheses derived from the analysis, including potential preprocessing steps or further explorations.  
+        
+        4. **Patterns and Anomalies:**  
+           Identify any notable patterns, correlations, clusters, or outliers in the data, referencing the generated visualizations.  
+        
+        ### Notes:  
+        - Structure the response clearly, using headings and bullet points for better readability.  
+        - Include explanations for advanced statistical terms or findings where relevant.  
+        - Integrate the insights from visualizations into the narrative.  
+        - Suggest improvements for visualizations, such as annotations, legends, or alternative chart types.  
+        - Ensure the response is concise yet thorough, balancing depth and clarity.  
 
-        Numeric Columns Highlights:
-        {chr(10).join([f"- {col}: Mean = {stats['mean']}, Median = {stats['median']}, Std Dev = {stats['std_dev']}" 
-                       for col, stats in summary.get('comprehensive_stats', {}).items()])}
-
-        Categorical Columns Highlights:
-        {chr(10).join([f"- {col}: Unique Values = {stats['unique_values']}, Most Common = {stats['most_common_value']}" 
-                       for col, stats in summary.get('categorical_stats', {}).items()])}
-
-        Generated Visualization Charts: {charts}
-
-        Please provide:
-        1. An overview of the dataset
-        2. Key insights from the statistical analysis
-        3. Potential recommendations or observations
-        4. Any notable patterns or anomalies
         """
 
         response = openai.ChatCompletion.create(
